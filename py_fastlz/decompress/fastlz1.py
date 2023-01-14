@@ -3,20 +3,15 @@ FastLZ1 Decompression
 """
 
 import io
-import struct
-from typing import BinaryIO
 
 
 def fastlz1_decompress(
-    ibuf: BinaryIO,
-    obuf: BinaryIO
+    ibuf: io.BytesIO,
+    obuf: io.BufferedRandom
 ) -> None:
-    """
-    Port of fastlz1_decompress reference implementation
-    """
 
     opcode_0 = ibuf.read(1)
-    opcode_0 = struct.pack('B', opcode_0[0] & 31)
+    opcode_0[0] &= 31
 
     while len(opcode_0) == 1:
         opcode = opcode_0[0]
@@ -39,10 +34,9 @@ def fastlz1_decompress(
 
             match_len = 9 + opcode_1
 
-            _pos = obuf.tell()
-            obuf.seek(-ofs, io.SEEK_CUR)
+            obuf.seek(-ofs, whence=io.SEEK_CUR)
             copy = obuf.read(match_len)
-            obuf.seek(_pos, io.SEEK_SET)
+            obuf.seek(0, whence=io.SEEK_END)
             obuf.write(copy)
 
         else:
@@ -52,10 +46,9 @@ def fastlz1_decompress(
             match_len = 2 + op_type
             ofs = (op_data << 8) + opcode_1
 
-            _pos = obuf.tell()
-            obuf.seek(-ofs, io.SEEK_CUR)
+            obuf.seek(-ofs, whence=io.SEEK_CUR)
             copy = obuf.read(match_len)
-            obuf.seek(_pos, io.SEEK_SET)
+            obuf.seek(0, whence=io.SEEK_END)
             obuf.write(copy)
 
         opcode_0 = ibuf.read(1)

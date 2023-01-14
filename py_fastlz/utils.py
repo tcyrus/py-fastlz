@@ -6,17 +6,21 @@ import io
 from typing import Optional
 
 
-class SizedBytesIO(io.BytesIO):
+class BufferedRandom(io.BufferedRandom):
     """
-    Helper class since the io.BytesIO constructor doesn't have
-    a way to specify the buffer size and the bytearray constructor
-    doesn't handle NoneType as an arg
+    Helper subclass for io.BufferedRandom since
+    constructor doesn't use default on NoneType buffer_size
     """
     def __init__(
         self,
+        raw: io.RawIOBase,
         buffer_size: Optional[int] = None
     ):
         if buffer_size is None:
-            super().__init__()
-        else:
-            super().__init__(bytearray(buffer_size))
+            buffer_size = io.DEFAULT_BUFFER_SIZE
+
+        # kwargs = {'buffer_size': buffer_size}
+        # kwargs = {k:v for k, v in kwargs.items() if v is not None}
+        # super().__init__(raw, **kwargs)
+
+        super().__init__(raw, buffer_size=buffer_size)
