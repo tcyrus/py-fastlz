@@ -1,6 +1,21 @@
 [build-system]
-requires = [
-    "setuptools >= 35.0.2",
-    "wheel"
+requires = ["uv_build>=0.11.14,<0.12"]
+build-backend = "uv_build"
+
+[project]
+name = "py-fastlz"
+version = "0.1.0-alpha.1"
+authors = [
+  {name = "Timothy Cyrus", email = "tcyrus@tcyr.us"},
 ]
-build-backend = "setuptools.build_meta"
+description = "A pure python implementation of the FastLZ compression algorithm"
+readme = "README.md"
+license = "MIT"
+
+[project.urls]
+Repository = "https://github.com/tcyrus/py-fastlz.git"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.13",
+]
